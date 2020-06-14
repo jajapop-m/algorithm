@@ -22,23 +22,33 @@
 #   p3 550
 #   p4 800
 
-def round_robin_scheduling(schedules)
-  time = 0
-  while !schedules.empty? do
-    time += [schedules.first[1].to_i, 100].min
-    if schedules.first[1].to_i > 100
-      schedules.first[1] = schedules.first[1].to_i - 100
-      schedules << schedules.shift
-    else
-      puts [schedules.shift[0], time].join(" ")
+# def round_robin_scheduling(schedules, q)
+#   time = 0
+#   while !schedules.empty? do
+#     time += [schedules.first[1].to_i, 100].min
+#     if schedules.first[1].to_i > q
+#       schedules.first[1] = schedules.first[1].to_i - q
+#       schedules << schedules.shift
+#     else
+#       puts [schedules.shift[0], time].join(" ")
+#     end
+#   end
+# end
+
+class Array
+  def round_robin_scheduling(q)
+    time = 0
+    while !empty? do
+      time += [first[1].to_i, q].min
+      first[1] = first[1].to_i - [first[1].to_i, q].min
+      first[1] == 0 ? (puts [shift[0], time].join(" ")) : (self << shift)
     end
   end
 end
-
 
 n, q = gets.split.map(&:to_i)
 schedules = []
 n.times do
   schedules << gets.split
 end
-round_robin_scheduling(schedules)
+schedules.round_robin_scheduling(q)

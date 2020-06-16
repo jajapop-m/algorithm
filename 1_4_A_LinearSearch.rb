@@ -25,3 +25,16 @@ def linear_serch(set, set_t)
 end
 
 puts linear_serch(set, set_t)
+
+# def linear_serch(set, set_t)
+#   sum = 0
+#   for t in 0..set_t.length-1
+#     i = 0
+#     set[set.length] = set_t[t]
+#     while set[i] != set_t[t]
+#       i += 1
+#     end
+#     sum += 1 if i != set.length
+#   end
+#   sum
+# end

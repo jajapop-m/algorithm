@@ -14,18 +14,28 @@ set = gets.split.map(&:to_i)
 q = gets.to_i
 set_t = gets.split.map(&:to_i)
 
+# 数列S内が重複しない場合、高速に処理
 def linear_serch(set, set_t)
-  count = 0
+  sum = 0
   set_t.each do |s|
-    set.each do |t|
-      count += 1 if s == t
-    end
+    sum += 1 if set.include? s
   end
-  count
 end
 
 puts linear_serch(set, set_t)
 
+# set内の重複する要素も重複する分カウントする
+# def linear_serch(set, set_t)
+#   count = 0
+#   set_t.each do |s|
+#     set.each do |t|
+#       count += 1 if s == t
+#     end
+#   end
+#   count
+# end
+
+# 番兵を追加したfor文による処理
 # def linear_serch(set, set_t)
 #   sum = 0
 #   for t in 0..set_t.length-1

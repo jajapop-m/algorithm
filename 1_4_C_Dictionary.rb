@@ -14,7 +14,7 @@
 #   yes
 #   no
 #   yes
-
+hogehoge
 OCUPYED = 0
 EMPTY = 1
 DELETED = 2

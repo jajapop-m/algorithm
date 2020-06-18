@@ -30,6 +30,20 @@ def output_result
   puts @results
 end
 
+def gets_command(hash_table)
+  command = gets.split.map(&:to_s)
+  if command[0] == 'insert'
+    insert(command[1], hash_table)
+  elsif command[0] == 'find'
+    find(command[1], hash_table)
+  elsif command[0] == 'delete'
+    delete(command[1], hash_table)
+  else
+    puts '不明なコマンドです。(有効なコマンド："insert","find","delete")'
+    gets_command(hash_table)
+  end
+end
+
 def create_hash_table(table_size)
   Array.new(table_size, [nil, EMPTY])
 end
@@ -51,46 +65,54 @@ def get_str(str)
   str.to_i
 end
 
+def find_target(str, hash_table)
+  @key = get_str(str)
+  @hash_value = get_hash_value(@key, hash_table)
+  @target = hash_table[@hash_value]
+end
+
+def refind_target(key, hash_table)
+  @hash_value = get_rehash_value(key, hash_table)
+  @target = hash_table[@hash_value]
+end
+
 def insert(str, hash_table)
-  key = get_str(str)
-  hash_value = get_hash_value(key, hash_table)
-  target = hash_table[hash_value]
+  find_target(str, hash_table)
 
   hash_table.size.times do
-    if target[STATUS] == EMPTY || target[STATUS] == DELETED
-      hash_table[hash_value] = [key, OCCUPIED]
+    if @target[STATUS] == EMPTY || @target[STATUS] == DELETED
+      hash_table[@hash_value] = [@key, OCCUPIED]
       return
     end
-    hash_value = get_rehash_value(key, hash_table)
-    target = hash_table[hash_value]
+    refind_target(@key, hash_table)
   end
   puts '値を追加するスペースがありません。'
 end
 
 def find(str, hash_table)
-  result = []
-  key = get_str(str)
-  hash_value = get_hash_value(key, hash_table)
-  target = hash_table[hash_value]
+  find_target(str, hash_table)
 
   hash_table.size.times do
-    if target[STATUS] == OCCUPIED && target[KEY] == key
+    if @target[STATUS] == OCCUPIED && @target[KEY] == @key
       input_result 'yes'
       return
     end
+    refind_target(@key, hash_table)
   end
   input_result 'no'
 end
 
-def gets_command(hash_table)
-  command = gets.split.map(&:to_s)
-  if command[0] == 'insert'
-    insert(command[1], hash_table)
-  elsif command[0] == 'find'
-    find(command[1], hash_table)
-  else
-    puts '不明なコマンドです。'
+def delete(str, hash_table)
+  find_target(str, hash_table)
+
+  hash_table.size.times do
+    if @target[STATUS] == OCCUPIED || @target[STATUS] == @key
+      hash_table[@hash_value] = [nil, DELETED]
+      return
+    end
+    refind_target(@key, hash_table)
   end
+  puts '値は存在しません。'
 end
 
 

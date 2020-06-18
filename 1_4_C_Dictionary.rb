@@ -14,44 +14,91 @@
 #   yes
 #   no
 #   yes
-hogehoge
-OCUPYED = 0
+
+KEY = 0
+STATUS = 1
+OCCUPIED = 0
 EMPTY = 1
 DELETED = 2
 
-def create_hash_table(hash_size = 7)
-  Array.new(hash_size, [nil, EMPTY])
+def input_result(result)
+  @results = [] if not @results
+  @results << result
 end
 
-def get_hash_value(key, table_size)
-  key % table_size
+def output_result
+  puts @results
 end
 
-def get_rehash_value(key, table_size)
-  1 + (key % (table_size - 1))
+def create_hash_table(table_size)
+  Array.new(table_size, [nil, EMPTY])
 end
 
-def get_char(str)
-  for i in 0..n
-    case str[i]
-    when 'A'
-      1
-    when 'C'
-      2
-    when 'G'
-      3
-    when 'T'
-      4
-    else
-      nil
+def get_hash_value(key, hash_table)
+  key % hash_table.size
+end
+
+def get_rehash_value(key, hash_table)
+  1 + (key % (hash_table.size - 1))
+end
+
+def get_str(str)
+  str.gsub!('A', '1')
+  str.gsub!('C', '2')
+  str.gsub!('G', '3')
+  str.gsub!('T', '4')
+  str.gsub!(/\D/,'')
+  str.to_i
+end
+
+def insert(str, hash_table)
+  key = get_str(str)
+  hash_value = get_hash_value(key, hash_table)
+  target = hash_table[hash_value]
+
+  hash_table.size.times do
+    if target[STATUS] == EMPTY || target[STATUS] == DELETED
+      hash_table[hash_value] = [key, OCCUPIED]
+      return
     end
+    hash_value = get_rehash_value(key, hash_table)
+    target = hash_table[hash_value]
+  end
+  puts '値を追加するスペースがありません。'
+end
+
+def find(str, hash_table)
+  result = []
+  key = get_str(str)
+  hash_value = get_hash_value(key, hash_table)
+  target = hash_table[hash_value]
+
+  hash_table.size.times do
+    if target[STATUS] == OCCUPIED && target[KEY] == key
+      input_result 'yes'
+      return
+    end
+  end
+  input_result 'no'
+end
+
+def gets_command(hash_table)
+  command = gets.split.map(&:to_s)
+  if command[0] == 'insert'
+    insert(command[1], hash_table)
+  elsif command[0] == 'find'
+    find(command[1], hash_table)
+  else
+    puts '不明なコマンドです。'
   end
 end
 
-def insert(str)
 
+Default_hash_table_size = 7
+hash_table = create_hash_table(Default_hash_table_size)
+
+n = gets.to_i
+n.times do
+  gets_command(hash_table)
 end
-
-def find(str)
-
-end
+output_result

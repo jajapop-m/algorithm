@@ -58,8 +58,8 @@ def trisection_right(a, b)
 end
 
 def trisection_top(s, t)
-  new_x = (t.x - s.x) * cos(PI/3) -(t.y - s.y) * sin(PI/3) + s.x
-  new_y = (t.x - s.x) * sin(PI/3) -(t.y - s.y) * cos(PI/3) + s.x
+  new_x = (t.x - s.x) * cos(PI/3) - (t.y - s.y) * sin(PI/3) + s.x
+  new_y = (t.x - s.x) * sin(PI/3) + (t.y - s.y) * cos(PI/3) + s.y
   Point.new(new_x, new_y)
 end
 

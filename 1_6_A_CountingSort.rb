@@ -39,3 +39,18 @@ end
 
 using CountingSort
 p array.counting_sort.join(" ")
+
+# 1.並べ替えたいarrayの別にcounting_arrayを用意し、arrayの中身と同じindexにカウントアップしていく。
+#   2 5 1 3 2 3 0 (array)
+# =>0 1 2 3 4 5 (counting_array)
+#   1 1 2 1 0 1
+# 2.counting_arrayを累計和で書き換える。
+# =>0 1 2 3 4 5 (counting_array)
+#   1 2 4 5 5 6
+# 3.arrayの右側から順に、counting_arrayのindexを参照し、その値の箇所にarrayの値をコピーして、その後countを-1する。
+#   2 5 1 3 2 3 0 (array)
+# =>0 1 2 3 4 5 (counting_array)
+#   1 2 4 5 5 6
+#   0はcounting_array[0]=>1より、result[1]へコピー(その後、counting_array[0] -= 1 =>0)
+#   3はcounting_array[3]=>5より、result[5]へコピー(その後、counting_array[3] -= 1 =>4)
+#   ...

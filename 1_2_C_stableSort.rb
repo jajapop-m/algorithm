@@ -41,13 +41,15 @@ def selectionSort(a, n)
 end
 
 class Array
-  def stable?(out)
+  # 安定性を判定したい配列で数字が同じ配列に対して(i<j)、比較対象の（ソート前の）配列で(a<b)、
+  # iと同じ配列をインデックスbで発見し、なおかつ、jと同じ配列がそれよりも左側のインデックスaで発見できた場合、不安定なソートといえる。
+  def stable?(comparison)
     n = self.length
     for i in 0..n-1 do
       for j in i+1..n-1 do
         for a in 0..n-1 do
           for b in a+1..n-1 do
-            if self[i][1] == self[j][1] && self[i] == out[b] && self[j] == out[a]
+            if self[i][1] == self[j][1] && self[i] == comparison[b] && self[j] == comparison[a]
               return "Not Stable"
             end
           end

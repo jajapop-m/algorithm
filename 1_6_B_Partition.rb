@@ -12,7 +12,7 @@ N = gets.to_i
 array = gets.split.map(&:to_i)
 
 def partition(array, p, r)
-  x = r
+  x = array[r]
   i = p - 1
   for j in p..r-1
     if array[j] <= x

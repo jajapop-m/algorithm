@@ -49,7 +49,7 @@ class Node
 
   def create_child(child_left_id)
     self.left = child_left_id
-    self.change_type("internal node") unless self.parent.nil?
+    self.change_type "internal node" unless self.parent.nil?
   end
 
   def change_type(type)
@@ -59,6 +59,10 @@ end
 
 N = gets.to_i
 node = Hash.new
+
+N.times do |id|
+  node[id] = Node.new
+end
 
 class << node
   def get_children_list(a_node)
@@ -74,19 +78,21 @@ class << node
     children_list
   end
 
-  def get_depth(a_node)
-    depth = 0
-    while a_node.parent >= 0
-      a_node = self[a_node.parent]
-      depth += 1
-    end
+  # def get_depth(a_node)
+  #   depth = 0
+  #   while a_node.parent >= 0
+  #     a_node = self[a_node.parent]
+  #     depth += 1
+  #   end
+  #   depth
+  # end
+
+  def set_depth(id=0, d=0, depth=Hash.new)
+    depth[id] = d
+    set_depth(self[id].right, d, depth) if self[id].right != nil
+    set_depth(self[id].left, d + 1, depth) if self[id].left != nil
     depth
   end
-end
-
-
-N.times do |id|
-  node[id] = Node.new
 end
 
 N.times do |i|
@@ -103,11 +109,13 @@ N.times do |i|
   end if k >= 2
 end
 
+depth = node.set_depth
 
 N.times do |i|
   node[i].parent ||= -1
   puts <<~NODE
-          node #{i}: parent = #{node[i].parent}, depth = #{node.get_depth(node[i])},\
+          node #{i}: parent = #{node[i].parent}, depth = #{depth[i]}, \
           #{node[i].node_type}, #{node.get_children_list(node[i])}"
         NODE
+        # depth = node.get_depth(node[i])
 end

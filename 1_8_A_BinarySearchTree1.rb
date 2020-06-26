@@ -17,9 +17,8 @@
 #    30 12 1 20 17 25 88 #先行順巡回アルゴリズム
 
 Node = Struct.new(:key, :parent, :left, :right)
-node = Hash.new
 
-class << node
+class BinarySearchTree
   attr_accessor :root
   def insert key
     node_k = Node.new(key)
@@ -59,6 +58,7 @@ class << node
   end
 end
 
+tree = BinarySearchTree
 m = gets.to_i
 commands = []
 m.times do
@@ -67,10 +67,10 @@ end
 commands.each do |command|
   case command[0]
   when 'insert'
-    node.insert command[1]
+    tree.insert command[1].to_i
   when 'print'
-    puts node.inorder_parse
-    puts node.preorder_parse
+    puts tree.inorder_parse
+    puts tree.preorder_parse
   else
     puts "不明なコマンド: #{command}"
   end

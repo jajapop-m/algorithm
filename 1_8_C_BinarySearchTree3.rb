@@ -41,9 +41,8 @@
 
 
 Node = Struct.new(:key, :parent, :left, :right)
-node = Hash.new
 
-class << node
+class BinarySearchTree
   attr_accessor :root
   def insert key
     node_k = Node.new(key)
@@ -151,6 +150,7 @@ class << node
   end
 end
 
+tree  = BinarySearchTree.new
 m = gets.to_i
 commands = []
 m.times do
@@ -159,15 +159,17 @@ end
 commands.each do |command|
   case command[0]
   when 'insert'
-    node.insert command[1]
+    tree.insert command[1].to_i
   when 'print'
-    puts node.inorder_parse
-    puts node.preorder_parse
+    puts tree.inorder_parse
+    puts tree.preorder_parse
   when 'find'
-    node.find? command[1]
+    tree.find? command[1].to_i
   when 'delete'
-    node.delete command[1]
+    tree.delete command[1].to_i
   else
     puts "不明なコマンド: #{command}"
   end
 end
+
+p tree

@@ -16,31 +16,62 @@
 #    1 12 17 20 25 30 88 #中間順巡回アルゴリズム(各キーの前に1つの空白)
 #    30 12 1 20 17 25 88 #先行順巡回アルゴリズム
 
-Node = Struct.new(:parent, :left, :right)
+Node = Struct.new(:key, :parent, :left, :right)
 node = Hash.new
 
 class << node
-  def insert k
-    
+  attr_accessor :root
+  def insert key
+    node_k = Node.new(key)
+    node_parent = nil
+    node_x = self.root
+    while node_x != nil
+      node_parent = node_x
+      if node_k.key < node_x.key
+        node_x = node_x.left
+      else
+        node_x = node_x.right
+      end
+    end
+    node_k.parent = node_parent
+
+    if node_parent == nil
+      self.root = node_k
+    elsif node_k.key < node_parent.key
+      node_parent.left = node_k
+    else
+      node_parent.right = node_k
+    end
   end
 
-  def preorder_parse(id=0)
-    return if id < 0
-    print " #{id}"
-    preorder_parse(self[id].left)
-    preorder_parse(self[id].right)
+  def preorder_parse(node = self.root)
+    return if node == nil
+    print " #{node.key}"
+    preorder_parse(node.left)
+    preorder_parse(node.right)
   end
 
-  def inorder_parse(id=0)
-    return if id < 0
-    inorder_parse(self[id].left)
-    print " #{id}"
-    inorder_parse(self[id].right)
+  def inorder_parse(node=self.root)
+    return if node == nil
+    inorder_parse(node.left)
+    print " #{node.key}"
+    inorder_parse(node.right)
   end
 end
 
-
-puts 'Preorder'
-puts node.preorder_parse
-puts 'Inorder'
-puts node.inorder_parse
+m = gets.to_i
+commands = []
+m.times do
+  commands << gets.split
+end
+commands.each do |command|
+  case command[0]
+  when 'insert'
+    node.insert command[1]
+  when 'print'
+    puts node.inorder_parse
+    puts node.preorder_parse
+  else
+    puts "不明なコマンド: #{command}"
+  end
+end

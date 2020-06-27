@@ -40,7 +40,44 @@
 #    8 2 1 22
 
 
-Node = Struct.new(:key, :parent, :left, :right)
+class Node
+  attr_accessor :key, :parent, :left, :right
+  def initialize(key)
+    @key = key
+  end
+
+  def switch_parent_to(parent)
+    self.parent = parent
+  end
+
+  def have_one_or_no_child?
+    self.left.nil? || self.right.nil?
+  end
+
+  def have_two_children?
+    !self.left.nil? && !self.right.nil?
+  end
+
+  def get_only_one_child_or_nil
+    if self.left != nil
+      return self.left
+    else
+      return self.right
+    end
+  end
+
+  def overwrite_key_with(node)
+    self.key = node.key
+  end
+
+  def left_child?
+    self == self.parent.left
+  end
+
+  def right_child?
+    self == self.parent.left
+  end
+end
 
 class BinarySearchTree
   attr_accessor :root
@@ -88,51 +125,43 @@ class BinarySearchTree
   end
 
   def delete key
-    z = find key
-    if z.left.nil? || z.right.nil?
-      y = z
+    del_target = find key
+    if del_target.have_one_or_no_child?
+      leave_behind = del_target
     else
-      y = get_successor z
+      leave_behind = get_successor del_target
     end
 
-    if y.left != nil
-      x = y.left
+    child = leave_behind.get_only_one_child_or_nil
+
+    child.switch_parent_to(leave_behind.parent) if not child.nil?
+
+    if leave_behind == self.root
+      self.root = child
+    elsif leave_behind.left_child?
+      (leave_behind.parent).left = child
     else
-      x = y.right
+      (leave_behind.parent).right = child
     end
 
-    if x !=nil
-      x.parent = y.parent
-    end
-
-    if y.parent.nil?
-      self.root = x
-    elsif y == y.parent.left
-      y.parent.left = x
-    else
-      y.parent.right = x
-    end
-
-    if y != z
-      z.key = y.key
-    end
+    del_target.overwrite_key_with(leave_behind) if del_target.have_two_children?
   end
 
-  def get_successor x
-    return get_minimum x.right if x.right != nil
-    y = x.parent
-    while y != nil && x == y.right
-      x = y
-      y = y.parent
+  def get_successor node
+    return get_minimum node.right if not node.right.nil?
+    parent = node.parent
+    while (not parent.nil?) && node.right_child?
+      node = parent
+      parent = parent.parent
     end
-    y
+    parent
   end
 
-  def get_minimum x
-    while x.left != nil
-      x = x.left
+  def get_minimum node
+    while not node.left.nil?
+      node = node.left
     end
-    x
+    node
   end
 
   def preorder_parse(node = self.root)
@@ -171,5 +200,3 @@ commands.each do |command|
     puts "不明なコマンド: #{command}"
   end
 end
-
-p tree

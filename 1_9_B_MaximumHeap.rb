@@ -22,7 +22,7 @@ class Heap < Array
     else
       largest = idx
     end
-    largest = r if r && r <= length - 1 && self[r].value > self[largest].value
+    largest = r if r <= length - 1 && self[r].value > self[largest].value
     if largest != idx
       self[idx], self[largest] = self[largest], self[idx]
       max_heapify(largest)

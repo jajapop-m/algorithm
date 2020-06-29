@@ -15,23 +15,25 @@ N = gets.to_i
 array = gets.split.map(&:to_i)
 Q = gets.to_i
 array_m = gets.split.map(&:to_i)
+DP = Array.new
+for i in 0..N
+  DP[i] = Array.new(array.sum)
+end
 
 def array.can_make_number?(i,target_number)
-  dp ||= Hash.new
-  dp[i] ||= Hash.new
-  return dp[i][target_number] if dp[i][target_number] # 結果をdpに保存し、計算済みの場合は結果をすぐに返す
+  return DP[i][target_number] if DP[i][target_number] # 結果をDPに保存し、計算済みの場合は結果をすぐに返す
   if target_number == 0
-    dp[i][target_number] = true
+    DP[i][target_number] = true
   elsif i >= N
-    dp[i][target_number] = false
+    DP[i][target_number] = false
   elsif self.can_make_number?(i + 1, target_number)
-    dp[i][target_number] = true
+    DP[i][target_number] = true
   elsif self.can_make_number?(i + 1, target_number - self[i])
-    dp[i][target_number] = true
+    DP[i][target_number] = true
   else
-    dp[i][target_number] = false
+    DP[i][target_number] = false
   end
-  dp[i][target_number]
+  DP[i][target_number]
 end
 
 array_m.each do |target_number|

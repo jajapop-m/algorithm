@@ -27,52 +27,112 @@
 #   5 4 7
 #   6 5 6
 
+class Graph < Array
+  def initialize(n)
+    @n = n
+    @color = Array.new(n, :white) # :white => 未訪問の頂点
+    @stack = Array.new
+    @d = Array.new(n)
+    @f = Array.new(n)
+    @time = 0
+  end
+
+  def dfs_with_stack(u)
+    adj = get_adjacents(self)
+    @stack.push(u)
+    change_gray(u)
+    discovery_time(u)
+
+    while !@stack.empty?
+      u = @stack.last
+      v = adj[u].shift
+      if v != nil
+        if @color[v] == :white
+          change_gray(v)
+          discovery_time(v)
+          @stack.push(v)
+        end
+      else
+        @stack.pop
+        change_black(u)
+        completion_time(u)
+      end
+    end
+    puts_result
+  end
+
+  private
+    def get_adjacents(v) # 隣接する頂点の配列を取得 v1...vk
+      adj = []
+      v.each do |a|
+        adj << a[2..-1].map{|i| i - 1} # 数字とインデックスを調節
+      end
+      adj
+    end
+
+    def discovery_time(u) # 発見時間
+      @time += 1
+      @d[u] = @time
+    end
+
+    def completion_time(u) # 完了時間
+      @time += 1
+      @f[u] = @time
+    end
+
+    def change_gray(u)
+      @color[u] = :gray # :gray => 訪問した頂点
+    end
+
+    def change_black(u)
+      @color[u] = :black # :black => 訪問を完了した頂点
+    end
+
+    def puts_result
+      d_result = @d.to_enum
+      f_result = @f.to_enum
+      @n.times do |i|
+        puts "#{i+1} #{d_result.next} #{f_result.next}"
+      end
+    end
+end
+
 n = gets.to_i
-adj=[]
+adj= Graph.new(n)
 n.times do |i|
   adj[i] = gets.split.map &:to_i
 end
-
-def adj.dfs_with_stack(u)
-  n = self.length
-  color = Array.new(n, :white)
-  stack = Array.new
-  d = Array.new(n)
-  f = Array.new(n)
-  time = 0
-
-  adj = []
-  self.each do |a|
-    adj << a[2..-1]
-  end
-
-  stack.push(u)
-  color[u] = :gray
-  time += 1
-  d[u] = time
-
-  while !stack.empty?
-    u = stack[-1]
-    v = adj[u].shift
-    if v != nil
-      if color[v-1] == :white
-        color[v-1] = :gray
-        time += 1
-        d[v-1] = time
-        stack.push(v-1)
-      end
-    else
-      stack.pop
-      color[u] = :black
-      time += 1
-      f[u] = time
-    end
-  end
-  d_result = d.to_enum
-  f_result = f.to_enum
-  n.times do |i|
-    puts "#{i+1} #{d_result.next} #{f_result.next}"
-  end
-end
-
 adj.dfs_with_stack(0)
+
+#
+# def adj.adjacency_list_to_adjacency_matrices
+#   matrices = Array.new(self.length) {Array.new(self.length,0)}
+#   self.each do |adj|
+#     u, k, *v = adj[0], adj[1], adj[2..-1]
+#     v.flatten.each do |v|
+#       matrices[u-1][v-1] = 1
+#     end
+#   end
+#   matrices
+# end
+#
+#
+# matrices = adj.adjacency_list_to_adjacency_matrices
+#
+#
+# class Graph
+#   def initialize(n)
+#     @status = Array.new(n, :waiting)
+#     @matrices = Array.new(n){Array.new(n, false)}
+#     @stack = Array.new
+#   end
+#
+#   def dfs(matrix)
+#     matrix.each_with_index do
+#
+#     end
+#   end
+# end
+#
+# graph = Graph.new(n)
+# graph.dfs(matrices)

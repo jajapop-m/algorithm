@@ -11,9 +11,9 @@
 #
 # 与えられた有向グラフG=(V,E)に対する深さ優先探索の動作を示すプログラム
 #
-# 入力例
-#   6 # Gの頂点数n
-#   1 2 2 3 # u k v1 v2 ... vk
+# 入力例 # Gの頂点数n # u k v1 v2 ... vk
+#   6
+#   1 2 2 3
 #   2 2 3 4
 #   3 1 5
 #   4 1 6
@@ -26,3 +26,53 @@
 #   4 9 10
 #   5 4 7
 #   6 5 6
+
+n = gets.to_i
+adj=[]
+n.times do |i|
+  adj[i] = gets.split.map &:to_i
+end
+
+def adj.dfs_with_stack(u)
+  n = self.length
+  color = Array.new(n, :white)
+  stack = Array.new
+  d = Array.new(n)
+  f = Array.new(n)
+  time = 0
+
+  adj = []
+  self.each do |a|
+    adj << a[2..-1]
+  end
+
+  stack.push(u)
+  color[u] = :gray
+  time += 1
+  d[u] = time
+
+  while !stack.empty?
+    u = stack[-1]
+    v = adj[u].shift
+    if v != nil
+      if color[v-1] == :white
+        color[v-1] = :gray
+        time += 1
+        d[v-1] = time
+        stack.push(v-1)
+      end
+    else
+      stack.pop
+      color[u] = :black
+      time += 1
+      f[u] = time
+    end
+  end
+  d_result = d.to_enum
+  f_result = f.to_enum
+  n.times do |i|
+    puts "#{i+1} #{d_result.next} #{f_result.next}"
+  end
+end
+
+adj.dfs_with_stack(0)

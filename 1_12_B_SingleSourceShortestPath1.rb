@@ -30,7 +30,7 @@ class Graph
   end
 
   def dijkstra(n=0)
-    init_vertexes_property
+    init_all_vers_property
     set_root(n)
     loop do
       break unless u = next_mincost_vertex
@@ -44,7 +44,7 @@ class Graph
   end
 
   private
-    def init_vertexes_property
+    def init_all_vers_property
       ver.each {|v| v.init_color_and_dist }
     end
 
@@ -113,6 +113,5 @@ end
 
 n = gets.to_i
 graph = Graph.new(n)
-graph.instance_eval{p @matrices}
 graph.dijkstra
 graph.puts_dists

@@ -44,14 +44,12 @@ class Graph
       break if mincost == Float::INFINITY
       ver[u].color = :black
 
-      ver.each do |v|
-        if v.color != :black
-          matrices[v.id].each do |cost|
-            if cost < v.weight
-              v.weight = cost
-              v.parent =  u
-              v.color = :gray
-            end
+      matrices[u].each_with_index do |cost,idx|
+        if ver[idx].color != :black
+          if cost < ver[idx].weight
+            ver[idx].weight = cost
+            ver[idx].parent =  u
+            ver[idx].color = :gray
           end
         end
       end
@@ -76,3 +74,4 @@ n = gets.to_i
 graph = Graph.new(n)
 graph.prim
 puts graph.sum
+graph.instance_eval{p @ver}

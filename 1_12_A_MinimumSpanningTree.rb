@@ -28,7 +28,7 @@ class Graph
     loop do
       break unless u = next_mincost_vertex
       add_minimum_spanning_tree(u)
-      update_mincosts(u)
+      update_mincosts(parent: u)
     end
   end
 
@@ -58,7 +58,7 @@ class Graph
       ver[u].color = :black
     end
 
-    def update_mincosts(parent)
+    def update_mincosts(parent:)
       matrices[parent].each_with_index do |cost,idx|
         if ver[idx].color != :black && cost < ver[idx].weight
           ver[idx].weight = cost

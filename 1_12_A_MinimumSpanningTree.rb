@@ -88,8 +88,8 @@ class V
   attr_accessor :id, :color, :weight, :parent
   def initialize(id)
     @id = id
-    self.color = :white
-    self.weight = Float::INFINITY
+    @color = :white
+    @weight = Float::INFINITY
   end
 end
 

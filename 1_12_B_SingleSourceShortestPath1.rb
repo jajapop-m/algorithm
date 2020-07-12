@@ -115,3 +115,8 @@ n = gets.to_i
 graph = Graph.new(n)
 graph.dijkstra
 graph.puts_dists
+
+# 補足
+# ダイクストラのアルゴリズムは負の重みの辺を含むグラフには適用できない。
+# 負の重みを持つグラフに対してはベルマンフォード(Bellman Ford)のアルゴリズムや
+# ワーシャルフロイド(Warshall Floyd)のアルゴリズムを適用する。

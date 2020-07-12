@@ -1,4 +1,4 @@
-# 単一始点最短経路
+  # 単一始点最短経路
 # 与えられた重み付き有向グラフG=(V,E)について、単一始点最短経路のコストを求めるプログラム
 # Gの頂点0を始点とし、0から各頂点vについて、最短経路上の辺の重みの総和d[v]を出力
 # 入力
@@ -20,16 +20,99 @@
 #   3 1
 #   4 3
 
-n = gets.to_i
-v_c = []
-n.times do |i|
-  _,_,*v_c[i] = gets.split.map(&:to_i)
+
+class Graph
+  attr_accessor :n, :ver, :matrices
+  def initialize(number_of_vertexes)
+    @n = number_of_vertexes
+    gets_adj_list
+    create_vertexes
+  end
+
+  def dijkstra(n=0)
+    init_vertexes_property
+    set_root(n)
+    loop do
+      break unless u = next_mincost_vertex
+      add_minimum_spanning_tree(u)
+      update_mindists(parent: u)
+    end
+  end
+
+  def puts_dists
+    ver.each{|v| puts "#{v.id} #{v.weight}"}
+  end
+
+  private
+    def init_vertexes_property
+      ver.each {|v| v.init_color_and_dist }
+    end
+
+    def gets_adj_list
+      v_c = []
+      n.times do |i|
+        _,_,*v_c[i] = gets.split.map(&:to_i)
+      end
+      @matrices = Array.new(n){Array.new(n,Float::INFINITY)}
+      v_c.each_with_index do |vc,idx|
+        vc.each_slice(2) do |v,c|
+          matrices[idx][v] = c
+        end
+      end
+    end
+
+    def set_root(v)
+      ver[v].weight = 0
+      ver[v].parent = -1
+    end
+
+    def next_mincost_vertex
+      mincost = Float::INFINITY
+      u = nil
+      ver.each do |v|
+        if v.color != :black && v.weight < mincost
+          mincost = v.weight
+          u = v.id
+        end
+      end
+      u
+    end
+
+    def add_minimum_spanning_tree(u)
+      ver[u].color = :black
+    end
+
+    def update_mindists(parent:)
+      matrices[parent].each_with_index do |cost,idx|
+        if ver[idx].color != :black && cost + ver[parent].weight < ver[idx].weight
+          ver[idx].weight = cost + ver[parent].weight
+          ver[idx].parent = parent
+          ver[idx].color = :gray
+        end
+      end
+    end
+
+    def create_vertexes
+      @ver = []
+      n.times {|i| ver << V.new(i)}
+    end
 end
 
-matrices = Array.new(n){Array.new(n,Float::INFINITY)}
-v_c.each_with_index do |vc,idx|
-  vc.each_slice(2) do |v,c|
-    matrices[idx][v] = c
+class V
+  attr_accessor :id, :color, :weight, :parent
+  def initialize(id)
+    @id = id
+    init_color_and_dist
+  end
+
+  def init_color_and_dist
+    @color = :white
+    @weight = Float::INFINITY
   end
 end
-p matrices
+
+n = gets.to_i
+graph = Graph.new(n)
+graph.instance_eval{p @matrices}
+graph.dijkstra
+graph.puts_dists

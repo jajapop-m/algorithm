@@ -14,3 +14,65 @@
 #   -1 -1 1 3 -1
 # 出力例 #Gの最小全域木の辺の重みの総和
 #   5
+
+class Graph
+  attr_accessor :ver, :matrices
+  def initialize(n)
+    @ver = []
+    @matrices = Array.new(n){Array.new(n,-1)}
+    n.times do |i|
+      ver << V.new(i)
+      gets.split.map(&:to_i).each_with_index do |j,idx|
+        j = Float::INFINITY if j == -1
+        matrices[i][idx] = j
+      end
+    end
+  end
+
+  def prim
+    ver[0].weight = 0
+    ver[0].parent = -1
+    loop do
+      mincost = Float::INFINITY
+      u = nil
+      ver.each do |v|
+        if v.color != :black && v.weight < mincost
+          mincost = v.weight
+          u = v.id
+        end
+      end
+      break if mincost == Float::INFINITY
+      ver[u].color = :black
+
+      ver.each do |v|
+        if v.color != :black
+          matrices[v.id].each do |cost|
+            if cost < v.weight
+              v.weight = cost
+              v.parent =  u
+              v.color = :gray
+            end
+          end
+        end
+      end
+    end
+  end
+
+  def sum
+    ver.inject(0){|a,v| a + v.weight}
+  end
+end
+
+class V
+  attr_accessor :id, :color, :weight, :parent
+  def initialize(id)
+    @id = id
+    self.color = :white
+    self.weight = Float::INFINITY
+  end
+end
+
+n = gets.to_i
+graph = Graph.new(n)
+graph.prim
+puts graph.sum

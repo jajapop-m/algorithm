@@ -1,4 +1,4 @@
-# 最小全域木
+  # 最小全域木
 # 与えられた重み付きグラフG=(V,E)に対する最小全域木の辺の重みの総和を計算するプログラム
 #
 # 入力
@@ -16,23 +16,33 @@
 #   5
 
 class Graph
-  attr_accessor :ver, :matrices
-  def initialize(n)
-    @ver = []
-    @matrices = Array.new(n){Array.new(n,-1)}
-    n.times do |i|
-      ver << V.new(i)
-      gets.split.map(&:to_i).each_with_index do |j,idx|
-        j = Float::INFINITY if j == -1
-        matrices[i][idx] = j
-      end
-    end
+  attr_accessor :n, :ver, :matrices
+  def initialize(number_of_vertexes)
+    @n = number_of_vertexes
+    gets_matrices
+    create_vertexes
   end
 
   def prim
-    ver[0].weight = 0
-    ver[0].parent = -1
+    set_root(0)
     loop do
+      break unless u = next_mincost_vertex
+      add_minimum_spanning_tree(u)
+      update_mincosts(u)
+    end
+  end
+
+  def sum_cost
+    ver.inject(0){|a,v| a + v.weight}
+  end
+
+  private
+    def set_root(v)
+      ver[v].weight = 0
+      ver[v].parent = -1
+    end
+
+    def next_mincost_vertex
       mincost = Float::INFINITY
       u = nil
       ver.each do |v|
@@ -41,24 +51,37 @@ class Graph
           u = v.id
         end
       end
-      break if mincost == Float::INFINITY
-      ver[u].color = :black
+      u
+    end
 
-      matrices[u].each_with_index do |cost,idx|
-        if ver[idx].color != :black
-          if cost < ver[idx].weight
-            ver[idx].weight = cost
-            ver[idx].parent =  u
-            ver[idx].color = :gray
-          end
+    def add_minimum_spanning_tree(u)
+      ver[u].color = :black
+    end
+
+    def update_mincosts(parent)
+      matrices[parent].each_with_index do |cost,idx|
+        if ver[idx].color != :black && cost < ver[idx].weight
+          ver[idx].weight = cost
+          ver[idx].parent = parent
+          ver[idx].color = :gray
         end
       end
     end
-  end
 
-  def sum
-    ver.inject(0){|a,v| a + v.weight}
-  end
+    def gets_matrices
+      @matrices = Array.new(n){Array.new(n,-1)}
+      n.times do |i|
+        gets.split.map(&:to_i).each_with_index do |j,idx|
+          j = Float::INFINITY if j == -1
+          matrices[i][idx] = j
+        end
+      end
+    end
+
+    def create_vertexes
+      @ver = []
+      n.times {|i| ver << V.new(i)}
+    end
 end
 
 class V
@@ -73,5 +96,4 @@ end
 n = gets.to_i
 graph = Graph.new(n)
 graph.prim
-puts graph.sum
-graph.instance_eval{p @ver}
+puts graph.sum_cost

@@ -24,34 +24,6 @@
 #   応用することによって、飛躍的に高速化出来る。
 
 class Heap < Array
-  def excute_priority_queue
-    build_max_heap
-    commands = Array.new
-    loop do
-      command = gets.split
-      case command[0]
-      when 'end'
-        break
-      when 'insert'
-        insert command[1].to_i
-      when 'extract'
-        puts extract_max.value
-      else
-        puts "不明なコマンド: #{command.join(" ")}"
-      end
-    end
-  end
-
-  def insert vertex
-    self << nil if self.empty?
-    self[self.length] = vertex
-    i = self.length - 1
-    while i > 1 && self[parent(i)].value < self[i].value
-      self[i], self[parent(i)] = self[parent(i)], self[i]
-      i = parent(i)
-    end
-  end
-
   def extract_min
     return nil if self.length < 2
     min = self[1]
@@ -98,7 +70,6 @@ class Graph
   attr_accessor :n, :ver, :matrices, :heap
   def initialize(number_of_vertexes)
     @n = number_of_vertexes
-    @heap = Heap.new
     gets_adj_list
     create_vertexes
     insert_heap
@@ -151,7 +122,7 @@ class Graph
           ver[id].weight = cost + ver[parent].weight
           ver[id].parent = parent
           ver[id].color = :gray
-          heap.build_min_heap
+          heap.min_heapify(id)
         end
       end
     end
@@ -162,7 +133,8 @@ class Graph
     end
 
     def insert_heap
-      ver.each {|v| heap.insert v}
+      @heap = Heap.new
+      ver.each_with_index {|v,i| heap[i+1] = v}
     end
 end
 

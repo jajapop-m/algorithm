@@ -39,7 +39,7 @@ class Heap < Array
       when 'insert'
         insert command[1].to_i
       when 'extract'
-        puts extract_max.value
+        puts extract_max
       else
         puts "不明なコマンド: #{command.join(" ")}"
       end
@@ -59,9 +59,9 @@ class Heap < Array
   def extract_max
     return 'error: heap under-flow' if self.length < 2
     max = self[1]
-    self[1] = self.pop
+    self.length>2 ? self[1] = self.pop : self.pop
     max_heapify(1)
-    max
+    max.value
   end
 
   def max_heapify(idx)

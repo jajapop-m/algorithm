@@ -37,7 +37,7 @@ class Heap < Array
       when 'end'
         break
       when 'insert'
-        insert command[1].to_i
+        insert HeapData.new(command[1].to_i)
       when 'extract'
         puts extract_max
       else
@@ -46,9 +46,9 @@ class Heap < Array
     end
   end
 
-  def insert key
+  def insert new_heap
     self << nil if self.empty?
-    self[self.length] = HeapData.new(key)
+    self[self.length] = new_heap
     i = self.length - 1
     while i > 1 && self[parent(i)].value < self[i].value
       self[i], self[parent(i)] = self[parent(i)], self[i]

@@ -23,13 +23,85 @@
 # =>ダイクストラのアルゴリズムは、隣接リストによる表現と二分ヒープ(優先度付きキュー)を
 #   応用することによって、飛躍的に高速化出来る。
 
+class Heap < Array
+  def excute_priority_queue
+    build_max_heap
+    commands = Array.new
+    loop do
+      command = gets.split
+      case command[0]
+      when 'end'
+        break
+      when 'insert'
+        insert command[1].to_i
+      when 'extract'
+        puts extract_max.value
+      else
+        puts "不明なコマンド: #{command.join(" ")}"
+      end
+    end
+  end
+
+  def insert vertex
+    self << nil if self.empty?
+    self[self.length] = vertex
+    i = self.length - 1
+    while i > 1 && self[parent(i)].value < self[i].value
+      self[i], self[parent(i)] = self[parent(i)], self[i]
+      i = parent(i)
+    end
+  end
+
+  def extract_min
+    return nil if self.length < 2
+    min = self[1]
+    self.length>2 ? self[1] = self.pop : self.pop
+    min_heapify(1)
+    min
+  end
+
+  def min_heapify(idx)
+    l = left(idx)
+    r = right(idx)
+    if l <= length - 1 && self[l].value < self[idx].value
+      smallest = l
+    else
+      smallest = idx
+    end
+    smallest = r if r <= length - 1 && self[r].value < self[smallest].value
+    if smallest != idx
+      self[idx], self[smallest] = self[smallest], self[idx]
+      min_heapify(smallest)
+    end
+  end
+
+  def build_min_heap
+    ((self.length-1) / 2).downto(1) do |idx|
+      min_heapify idx
+    end
+  end
+
+  def parent(idx)
+    idx / 2
+  end
+
+  def left(idx)
+    idx * 2
+  end
+
+  def right(idx)
+    idx * 2 + 1
+  end
+end
 
 class Graph
-  attr_accessor :n, :ver, :matrices
+  attr_accessor :n, :ver, :matrices, :heap
   def initialize(number_of_vertexes)
     @n = number_of_vertexes
+    @heap = Heap.new
     gets_adj_list
     create_vertexes
+    insert_heap
   end
 
   def dijkstra(n=0)
@@ -52,33 +124,21 @@ class Graph
     end
 
     def gets_adj_list
-      v_c = []
+      @v_c = []
       n.times do |i|
-        _,_,*v_c[i] = gets.split.map(&:to_i)
-      end
-      @matrices = Array.new(n){Array.new(n,Float::INFINITY)}
-      v_c.each_with_index do |vc,idx|
-        vc.each_slice(2) do |v,c|
-          matrices[idx][v] = c
-        end
+        _,_,*@v_c[i] = gets.split.map(&:to_i)
       end
     end
 
     def set_root(v)
       ver[v].weight = 0
       ver[v].parent = -1
+      heap.build_min_heap
     end
 
     def next_mincost_vertex
-      mincost = Float::INFINITY
-      u = nil
-      ver.each do |v|
-        if v.color != :black && v.weight < mincost
-          mincost = v.weight
-          u = v.id
-        end
-      end
-      u
+      min_ver = heap.extract_min
+      min_ver&.id
     end
 
     def add_minimum_spanning_tree(u)
@@ -86,11 +146,12 @@ class Graph
     end
 
     def update_mindists(parent:)
-      matrices[parent].each_with_index do |cost,idx|
-        if ver[idx].color != :black && cost + ver[parent].weight < ver[idx].weight
-          ver[idx].weight = cost + ver[parent].weight
-          ver[idx].parent = parent
-          ver[idx].color = :gray
+      @v_c[parent].each_slice(2) do |id,cost|
+        if ver[id].color != :black && cost + ver[parent].weight < ver[id].weight
+          ver[id].weight = cost + ver[parent].weight
+          ver[id].parent = parent
+          ver[id].color = :gray
+          heap.build_min_heap
         end
       end
     end
@@ -99,10 +160,15 @@ class Graph
       @ver = []
       n.times {|i| ver << V.new(i)}
     end
+
+    def insert_heap
+      ver.each {|v| heap.insert v}
+    end
 end
 
 class V
   attr_accessor :id, :color, :weight, :parent
+  alias_method :value, :weight
   def initialize(id)
     @id = id
     init_color_and_dist

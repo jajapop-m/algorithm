@@ -29,7 +29,7 @@ def cm.get_the_number_of_coin(n)
   t = Array.new(n+1, Float::INFINITY)
   t[0] = 0
 
-  self.each_with_index do |c, i|
+  self.each do |c|
     for j in c..n
       t[j] = [t[j], t[j-c]+1].min
     end
@@ -38,3 +38,11 @@ def cm.get_the_number_of_coin(n)
 end
 
 puts cm.get_the_number_of_coin(n)
+
+# c t
+# 0 [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+# 1 [0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8]
+# 2 [0, 1, 1, 2, 2, 3, 3, 1, 2, 2, 3, 3, 4, 4, 2, 3]
+# 3 [0, 1, 1, 2, 2, 3, 3, 1, 1, 2, 2, 3, 3, 4, 2, 2]
+# 4 [0, 1, 1, 2, 2, 3, 3, 1, 1, 2, 2, 3, 1, 2, 2, 2]
+# 5 [0, 1, 1, 2, 2, 3, 3, 1, 1, 2, 2, 3, 1, 2, 2, {2}]

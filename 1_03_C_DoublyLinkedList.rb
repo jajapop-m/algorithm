@@ -38,3 +38,16 @@ commands.each do |command|
   end
 end
 puts list.reverse.join(" ")
+
+
+# class Array
+#   alias_method :insert, :<<
+#   alias_method :deleteFrst, :shift
+#   alias_method :deleteLast, :pop
+# end
+#
+# commands.each do |command|
+#   eval("#{command[0]}(#{command[1]})")
+# end
+#
+# puts list.reverse.join(" ")

@@ -32,48 +32,48 @@ class Item
     @value = value
     @weight = weight
   end
+
+  def loadable?(capacity)
+    self.weight <= capacity
+  end
 end
 
 class Knapsack
-  attr_accessor :capacity, :g, :n
+  attr_accessor :capacity, :g
   def initialize(capacity)
     @capacity = capacity
   end
 
   def compute(items)
-    @n = items.length - 1
-    c = Array.new(n+1){Array.new(capacity+1,0)}
-    @g = Array.new(n+1){Array.new(capacity+1)}
+    n = items.compact.length
+    c = Array.new(n+1){Array.new(capacity+1,0)} # 価値の合計の最大値を保存する配列
+    @g = Array.new(n+1){Array.new(capacity+1)}  # 品物の選択状況を保存する配列(:diagonal=>選択,:top=>選択しない)
 
-    for i in 1..n
+    for id in 1..n
       for w in 1..capacity
-        if items[i].weight <= w
-          if items[i].value + c[i-1][w-items[i].weight] > c[i-1][w]
-            c[i][w] = items[i].value + c[i-1][w-items[i].weight]
-            g[i][w] = :diagonal
-          else
-            c[i][w] = c[i-1][w]
-            g[i][w] = :top
-          end
+        if items[id].loadable?(w) && items[id].value + c[id-1][w-items[id].weight] > c[id-1][w] # item[id]を入れた方が良い場合
+            c[id][w] = items[id].value + c[id-1][w-items[id].weight]
+            g[id][w] = :diagonal
         else
-          c[i][w] = c[i-1][w]
-          g[i][w] = :top
+          c[id][w] = c[id-1][w]
+          g[id][w] = :top
         end
       end
     end
     c[n][capacity]
   end
 
-  def items_number(items)
-    items_number = []
+  # :diagonal(選択した)場合はリストに追加、そうでない場合は何もせずidをデクリメント
+  def loaded_item_ids(items)
+    item_ids = []
     w = capacity
-    for i in [*1..n].reverse
-      if g[i][w] == :diagonal
-        items_number << i
-        w -= items[i].weight
+    [*1..items.compact.length].reverse_each do |id|
+      if g[id][w] == :diagonal
+        item_ids << id
+        w -= items[id].weight
       end
     end
-    items_number
+    item_ids
   end
 end
 
@@ -86,4 +86,4 @@ end
 
 knapsack = Knapsack.new(w)
 puts knapsack.compute(items)
-p knapsack.items_number(items)
+puts knapsack.loaded_item_ids(items).join(" ")

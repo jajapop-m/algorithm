@@ -35,14 +35,15 @@ class Item
 end
 
 class Knapsack
-  attr_accessor :capacity
+  attr_accessor :capacity, :g, :n
   def initialize(capacity)
     @capacity = capacity
   end
+
   def compute(items)
-    n = items.length - 1
+    @n = items.length - 1
     c = Array.new(n+1){Array.new(capacity+1,0)}
-    g = Array.new(n+1){Array.new(capacity+1)}
+    @g = Array.new(n+1){Array.new(capacity+1)}
 
     for i in 1..n
       for w in 1..capacity
@@ -62,6 +63,18 @@ class Knapsack
     end
     c[n][capacity]
   end
+
+  def items_number(items)
+    items_number = []
+    w = capacity
+    for i in [*1..n].reverse
+      if g[i][w] == :diagonal
+        items_number << i
+        w -= items[i].weight
+      end
+    end
+    items_number
+  end
 end
 
 n,w = gets.split.map(&:to_i)
@@ -73,3 +86,4 @@ end
 
 knapsack = Knapsack.new(w)
 puts knapsack.compute(items)
+p knapsack.items_number(items)

@@ -24,3 +24,52 @@
 # 考慮する品物の数i、各iにおけるナップサックの重さwを増やしていき、c[i][w]を更新していく。
 #   c[i][w] = max[1=>c[i-1][w-品物iの重さ]+品物iの価値, 2=>c[i-1][w]]
 #   1:この時点で品物を選択する, 2:この時点で品物を選択しない
+
+class Item
+  attr_accessor :id, :value, :weight
+  def initialize(id,value,weight)
+    @id = id
+    @value = value
+    @weight = weight
+  end
+end
+
+class Knapsack
+  attr_accessor :capacity
+  def initialize(capacity)
+    @capacity = capacity
+  end
+  def compute(items)
+    n = items.length - 1
+    c = Array.new(n+1){Array.new(capacity+1,0)}
+    g = Array.new(n+1){Array.new(capacity+1)}
+
+    for i in 1..n
+      for w in 1..capacity
+        if items[i].weight <= w
+          if items[i].value + c[i-1][w-items[i].weight] > c[i-1][w]
+            c[i][w] = items[i].value + c[i-1][w-items[i].weight]
+            g[i][w] = :diagonal
+          else
+            c[i][w] = c[i-1][w]
+            g[i][w] = :top
+          end
+        else
+          c[i][w] = c[i-1][w]
+          g[i][w] = :top
+        end
+      end
+    end
+    c[n][capacity]
+  end
+end
+
+n,w = gets.split.map(&:to_i)
+items = Array.new(n)
+n.times do |i|
+  vi, wi = gets.split.map(&:to_i)
+  items[i+1] = Item.new(i,vi,wi)
+end
+
+knapsack = Knapsack.new(w)
+puts knapsack.compute(items)

@@ -45,17 +45,18 @@ n.times{|i| ary[i] = gets.to_i }
 
 def ary.lis
   l = []
-  l[0] = Float::INFINITY
-  i = 0
-  self.each do |a|
-    if l[i] >= a
-      l[i] = a
+  l[0] = self[0]
+  length = 1
+  for i in 1...self.length
+    if l[length-1] >= self[i]
+      j = l.bsearch_index{|x| x >= self[i]}
+      l[j] = self[i]
     else
-      i += 1
-      l[i] = a
+      length += 1
+      l[length-1] = self[i]
     end
   end
-  l.length
+  length
 end
 
 puts ary.lis

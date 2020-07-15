@@ -10,12 +10,6 @@
 # 出力例 #面積の最大値
 #   6
 
-h, w = gets.split.map &:to_i
-lines = []
-h.times do
-  lines << gets.split.map(&:to_i)
-end
-
 Dirty = 1
 Clean = 0
 
@@ -47,6 +41,12 @@ def largest_rectangle(line)
     stack << [height, rect[Pos]]
   end
   max_area
+end
+
+h, w = gets.split.map &:to_i
+lines = []
+h.times do
+  lines << gets.split.map(&:to_i)
 end
 
 pile_numbers = map_pile_numbers(lines)

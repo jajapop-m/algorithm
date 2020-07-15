@@ -40,23 +40,26 @@
 #   length_i: i番目の要素までを使った最長部分列の長さを表す整数
 
 n = gets.to_i
-ary = []
-n.times{|i| ary[i] = gets.to_i }
+a = []
+n.times{|i| a[i] = gets.to_i }
 
-def ary.lis
+def a.lis
   l = []
-  l[0] = self[0]
-  length = 1
-  for i in 1...self.length
-    if l[length-1] >= self[i]
-      j = l.bsearch_index{|x| x >= self[i]}
-      l[j] = self[i]
-    else
-      length += 1
-      l[length-1] = self[i]
-    end
+  self.each do |ai|
+    next l << ai if l.empty?
+    l[-1] >= ai ? l[l.bsearch_index{|x| x >= ai}]=ai : l.push(ai)
   end
-  length
+  l.length
 end
 
-puts ary.lis
+puts a.lis
+
+# たとえば、n = 8, a = [4, 1, 6, 2, 8, 5, 7, 3]のとき、lは、
+# 4 [4]
+# 1 [1]
+# 6 [1, 6]
+# 2 [1, 2]
+# 8 [1, 2, 8]
+# 5 [1, 2, 5]
+# 7 [1, 2, 5, 7]
+# 3 [1, 2, 3, 7]

@@ -25,7 +25,7 @@ def max_square(lines)
   lines.each_with_index do |line, i|
     line.each_with_index do |status, j|
       next dp[i][j] = 0 if status == Dirty
-      next dp[i][j] = 1 if i == 0 || j == 0 && status == Clean
+      next dp[i][j] = 1 if (i == 0 || j == 0) && status == Clean
       dp[i][j] = [dp[i][j-1], dp[i-1][j], dp[i-1][j-1]].min + 1
       max_width = [max_width, dp[i][j]].max
     end

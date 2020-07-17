@@ -46,7 +46,7 @@ class Heap < Array
     end
   end
 
-  def insert new_heap
+  def insert(new_heap)
     self << nil if self.empty?
     self[self.length] = new_heap
     i = self.length - 1

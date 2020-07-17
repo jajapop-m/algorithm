@@ -20,7 +20,7 @@ Node = Struct.new(:key, :parent, :left, :right)
 
 class BinarySearchTree
   attr_accessor :root
-  def insert key
+  def insert(key)
     node_k = Node.new(key)
     node_parent = nil
     node_x = self.root

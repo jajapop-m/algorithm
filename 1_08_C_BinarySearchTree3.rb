@@ -81,7 +81,7 @@ end
 
 class BinarySearchTree
   attr_accessor :root
-  def insert key
+  def insert(key)
     node_k = Node.new(key)
     node_parent = nil
     node_x = self.root
@@ -104,7 +104,7 @@ class BinarySearchTree
     end
   end
 
-  def find key
+  def find(key)
     node = self.root
     while node != nil && key != node.key
       if key < node.key
@@ -116,7 +116,7 @@ class BinarySearchTree
     node
   end
 
-  def find? key
+  def find?(key)
     if find key
       puts 'yes'
     else
@@ -124,7 +124,7 @@ class BinarySearchTree
     end
   end
 
-  def delete key
+  def delete(key)
     del_target = find key
     if del_target.have_one_or_no_child?
       leave_behind = del_target
@@ -147,7 +147,7 @@ class BinarySearchTree
     del_target.overwrite_key_with(leave_behind) if del_target.have_two_children?
   end
 
-  def get_successor node
+  def get_successor(node)
     return get_minimum node.right if not node.right.nil?
     parent = node.parent
     while (not parent.nil?) && node.right_child?
@@ -157,7 +157,7 @@ class BinarySearchTree
     parent
   end
 
-  def get_minimum node
+  def get_minimum(node)
     while not node.left.nil?
       node = node.left
     end
@@ -171,7 +171,7 @@ class BinarySearchTree
     preorder_parse(node.right)
   end
 
-  def inorder_parse(node=self.root)
+  def inorder_parse(node = self.root)
     return if node == nil
     inorder_parse(node.left)
     print " #{node.key}"

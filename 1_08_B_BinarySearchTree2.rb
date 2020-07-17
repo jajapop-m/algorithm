@@ -27,7 +27,7 @@ Node = Struct.new(:key, :parent, :left, :right)
 
 class BinarySearchTree
   attr_accessor :root
-  def insert key
+  def insert(key)
     node_k = Node.new(key)
     node_parent = nil
     node_x = self.root
@@ -50,7 +50,7 @@ class BinarySearchTree
     end
   end
 
-  def find key
+  def find(key)
     node = self.root
     while node != nil && key != node.key
       if key < node.key
@@ -62,7 +62,7 @@ class BinarySearchTree
     node
   end
 
-  def find? key
+  def find?(key)
     if find key
       puts 'yes'
     else
@@ -77,7 +77,7 @@ class BinarySearchTree
     preorder_parse(node.right)
   end
 
-  def inorder_parse(node=self.root)
+  def inorder_parse(node = self.root)
     return if node == nil
     inorder_parse(node.left)
     print " #{node.key}"

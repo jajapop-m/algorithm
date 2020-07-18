@@ -59,7 +59,7 @@ class Knapsack
     c[n][capacity]
   end
 
-  def loadable?(items_id, capacity:)
+  def loadable?(items_id, capacity: @capacity)
     items_id.weight <= capacity
   end
 

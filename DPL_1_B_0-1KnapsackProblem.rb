@@ -32,10 +32,6 @@ class Item
     @value = value
     @weight = weight
   end
-
-  def loadable?(capacity)
-    self.weight <= capacity
-  end
 end
 
 class Knapsack
@@ -51,7 +47,7 @@ class Knapsack
 
     for id in 1..n
       for w in 1..capacity
-        if items[id].loadable?(w) && items[id].value + c[id-1][w-items[id].weight] > c[id-1][w] # item[id]を入れた方が良い場合
+        if loadable?(items[id], capacity: w) && items[id].value + c[id-1][w-items[id].weight] > c[id-1][w] # item[id]を入れた方が良い場合
             c[id][w] = items[id].value + c[id-1][w-items[id].weight]
             g[id][w] = :diagonal
         else
@@ -61,6 +57,10 @@ class Knapsack
       end
     end
     c[n][capacity]
+  end
+
+  def loadable?(items_id, capacity:)
+    items_id.weight <= capacity
   end
 
   # :diagonal(選択した)場合はリストに追加、そうでない場合は何もせずidをデクリメント

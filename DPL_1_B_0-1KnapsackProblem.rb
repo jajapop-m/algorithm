@@ -59,10 +59,6 @@ class Knapsack
     c[n][capacity]
   end
 
-  def loadable?(items_id, capacity: @capacity)
-    items_id.weight <= capacity
-  end
-
   # :diagonal(選択した)場合はリストに追加、そうでない場合は何もせずidをデクリメント
   def loaded_item_ids(items)
     item_ids = []
@@ -75,6 +71,11 @@ class Knapsack
     end
     item_ids
   end
+
+  private
+    def loadable?(items_id, capacity: @capacity)
+      items_id.weight <= capacity
+    end
 end
 
 n,w = gets.split.map(&:to_i)

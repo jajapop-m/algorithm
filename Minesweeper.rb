@@ -38,14 +38,14 @@ class Board
     return if lists[i][j].status == :bomb
     return if (i < 0 || i > n-1 || j < 0 || j > n-1) || \
               lists[i][j].status != 0 && lists[i][j].status.to_s.match(/\d/)
-    reveal_loop(i-1,j-1) if i-1 > -1 && j-1 > -1 && (not lists[i-1][j].revealed?)
-    reveal_loop(i-1,j)   if i-1 > -1 && (not lists[i-1][j].revealed?)
-    reveal_loop(i-1,j+1) if i-1 > -1 && j+1 < n && (not lists[i-1][j+1].revealed?)
-    reveal_loop(i+1,j-1) if i+1 < n && j-1 > -1 && (not lists[i+1][j-1].revealed?)
-    reveal_loop(i+1,j)   if i+1 < n && (not lists[i+1][j].revealed?)
-    reveal_loop(i+1,j+1) if i+1 < n && j+1 < n && (not lists[i+1][j+1].revealed?)
-    reveal_loop(i,j-1)   if j-1 > -1 && (not lists[i][j-1].revealed?)
-    reveal_loop(i,j+1)   if j+1 < n  && (not lists[i][j+1].revealed?)
+    reveal_loop(i-1,j-1) if within_range?(i-1,j-1) && (not lists[i-1][j].revealed?)
+    reveal_loop(i-1,j)   if within_range?(i-1,j)   && (not lists[i-1][j].revealed?)
+    reveal_loop(i-1,j+1) if within_range?(i-1,j+1) && (not lists[i-1][j+1].revealed?)
+    reveal_loop(i+1,j-1) if within_range?(i+1,j-1) && (not lists[i+1][j-1].revealed?)
+    reveal_loop(i+1,j)   if within_range?(i+1,j)   && (not lists[i+1][j].revealed?)
+    reveal_loop(i+1,j+1) if within_range?(i+1,j+1) && (not lists[i+1][j+1].revealed?)
+    reveal_loop(i,j-1)   if within_range?(i,j-1)   && (not lists[i][j-1].revealed?)
+    reveal_loop(i,j+1)   if within_range?(i,j+1)   && (not lists[i][j+1].revealed?)
   end
 
   def game_over
@@ -64,12 +64,12 @@ class Board
   end
 
   def check_game_status
-    if game_clear?
+    if game_over?
+      game_over
+      return
+    elsif game_clear?
       puts_list
       puts "CLEAR!!".center(n*(n.to_s.length)+n.to_s.length)
-      return
-    elsif game_over?
-      game_over
       return
     end
     puts_list
@@ -95,7 +95,6 @@ class Board
         else
           result << s
         end
-        # s == 0 ? result << "□" : result << s
       else
         result << "■"
       end
@@ -128,6 +127,8 @@ class Board
     numbers_set
   end
 
+  private
+
   def numbers_set
     bomb_map.each_slice(n).with_index do |line, i|
       line.each_with_index do |status, j|
@@ -145,6 +146,9 @@ class Board
     end
   end
 
+  def within_range?(i,j)
+    i >= 0 && i < n && j >= 0 && j < n
+  end
 end
 
 class Minesweeper

@@ -8,14 +8,6 @@ class Cell
     @revealed = false
   end
 
-  def set_bomb
-    status = :bomb
-  end
-
-  def set_number(num)
-    status = num
-  end
-
   def revealed?
     revealed
   end
@@ -43,7 +35,7 @@ class Board
 
   def reveal_loop(i,j)
     lists[i][j].revealed = true
-    return if lists[i][j].status == "B"
+    return if lists[i][j].status == :bomb
     return if (i < 0 || i > n-1 || j < 0 || j > n-1) || \
               lists[i][j].status != 0 && lists[i][j].status.to_s.match(/\d/)
     reveal_loop(i-1,j-1) if i-1 > -1 && j-1 > -1 && (not lists[i-1][j].revealed?)
@@ -58,15 +50,15 @@ class Board
 
   def game_over
     lists.flatten.each do |l|
-      l.revealed = true if l.status == "B"
+      l.revealed = true if l.status == :bomb
     end
     puts_list
-    puts "  GAME OVER"
+    puts "GAME OVER".center(n*(n.to_s.length)+n.to_s.length)
   end
 
   def game_over?
     lists.flatten.each do |l|
-      return true if l.status == "B" && l.revealed == true
+      return true if l.status == :bomb && l.revealed == true
     end
     false
   end
@@ -74,7 +66,7 @@ class Board
   def check_game_status
     if game_clear?
       puts_list
-      puts "  CLEAR!! "
+      puts "CLEAR!!".center(n*(n.to_s.length)+n.to_s.length)
       return
     elsif game_over?
       game_over
@@ -95,8 +87,15 @@ class Board
     result = []
     lists.flatten.each do |l|
       if l.revealed
-        s =  l.status
-        s == 0 ? result << "□" : result << s
+        case s =  l.status
+        when 0
+          result << "□"
+        when :bomb
+          result << "B"
+        else
+          result << s
+        end
+        # s == 0 ? result << "□" : result << s
       else
         result << "■"
       end
@@ -124,7 +123,7 @@ class Board
     end
     bomb_map.shuffle!
     bomb_map.each_with_index do |bomb, idx|
-      lists.flatten[idx].status = "B" if bomb
+      lists.flatten[idx].status = :bomb if bomb
     end
     numbers_set
   end
@@ -133,14 +132,14 @@ class Board
     bomb_map.each_slice(n).with_index do |line, i|
       line.each_with_index do |status, j|
         if status
-          lists[i-1][j-1].status += 1 if (i != 0 && j != 0)     && lists[i-1][j-1].status != "B"
-          lists[i-1][j].status += 1   if i != 0                 && lists[i-1][j].status != "B"
-          lists[i-1][j+1].status += 1 if (i != 0 && j != n-1)   && lists[i-1][j+1].status != "B"
-          lists[i][j-1].status += 1   if j != 0                 && lists[i][j-1].status != "B"
-          lists[i][j+1].status += 1   if j != n-1               && lists[i][j+1].status != "B"
-          lists[i+1][j-1].status += 1 if (i != n-1 && j != 0)   && lists[i+1][j-1].status != "B"
-          lists[i+1][j].status += 1   if i != n-1               && lists[i+1][j].status != "B"
-          lists[i+1][j+1].status += 1 if (i != n-1 && j != n-1) && lists[i+1][j+1].status != "B"
+          lists[i-1][j-1].status += 1 if (i != 0 && j != 0)     && lists[i-1][j-1].status != :bomb
+          lists[i-1][j].status += 1   if i != 0                 && lists[i-1][j].status != :bomb
+          lists[i-1][j+1].status += 1 if (i != 0 && j != n-1)   && lists[i-1][j+1].status != :bomb
+          lists[i][j-1].status += 1   if j != 0                 && lists[i][j-1].status != :bomb
+          lists[i][j+1].status += 1   if j != n-1               && lists[i][j+1].status != :bomb
+          lists[i+1][j-1].status += 1 if (i != n-1 && j != 0)   && lists[i+1][j-1].status != :bomb
+          lists[i+1][j].status += 1   if i != n-1               && lists[i+1][j].status != :bomb
+          lists[i+1][j+1].status += 1 if (i != n-1 && j != n-1) && lists[i+1][j+1].status != :bomb
         end
       end
     end

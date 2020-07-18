@@ -46,10 +46,14 @@ class Board
     return if lists[i][j].status == "B"
     return if (i < 0 || i > n-1 || j < 0 || j > n-1) || \
               lists[i][j].status != 0 && lists[i][j].status.to_s.match(/\d/)
-    reveal_loop(i-1,j) if i-1 > -1 && (not lists[i-1][j].revealed?)
-    reveal_loop(i+1,j) if i+1 < n  && (not lists[i+1][j].revealed?)
-    reveal_loop(i,j-1) if j-1 > -1 && (not lists[i][j-1].revealed?)
-    reveal_loop(i,j+1) if j+1 < n  && (not lists[i][j+1].revealed?)
+    reveal_loop(i-1,j-1) if i-1 > -1 && j-1 > -1 && (not lists[i-1][j].revealed?)
+    reveal_loop(i-1,j)   if i-1 > -1 && (not lists[i-1][j].revealed?)
+    reveal_loop(i-1,j+1) if i-1 > -1 && j+1 < n && (not lists[i-1][j+1].revealed?)
+    reveal_loop(i+1,j-1) if i+1 < n && j-1 > -1 && (not lists[i+1][j-1].revealed?)
+    reveal_loop(i+1,j)   if i+1 < n && (not lists[i+1][j].revealed?)
+    reveal_loop(i+1,j+1) if i+1 < n && j+1 < n && (not lists[i+1][j+1].revealed?)
+    reveal_loop(i,j-1)   if j-1 > -1 && (not lists[i][j-1].revealed?)
+    reveal_loop(i,j+1)   if j+1 < n  && (not lists[i][j+1].revealed?)
   end
 
   def game_over
@@ -103,7 +107,13 @@ class Board
       next res[i] = r.unshift(" ") if i == 0
       res[i] = r.unshift(i)
     end
-    res.each{|r| puts r.join(" ")}
+    len = [n.to_s.length, 2].max
+    res.each do |r|
+      r.each do |a|
+          print a.to_s.rjust(len)
+      end
+      puts "\r"
+    end
   end
 
   def bomb_set(bomb_count)
@@ -139,17 +149,17 @@ class Board
 end
 
 class Minesweeper
-  attr_accessor :board
+  attr_accessor :board, :n
   def game_config
     puts "7×7マス,爆弾3個 でよろしいですか？(yes/no)"
     yes_or_no = gets.to_s.chomp
     if yes_or_no == "no"
       puts "縦横何マスずつにしますか？"
-      n = gets.to_i
+      @n = gets.to_i
       puts "爆弾の個数は何個にしますか？"
       bomb = gets.to_i
     elsif yes_or_no == "yes"
-      n, bomb = 7, 3
+      @n, bomb = 7, 3
     else
       puts "もう一度入力して下さい。"
       return game_config
@@ -168,6 +178,10 @@ class Minesweeper
     while not (board.game_clear? || board.game_over?)
       print "縦 横:"
       i,j = gets.split.map(&:to_i)
+      if (not i) || (not j) || (i < 0 || i > n) || (j < 0 || j > n)
+        puts "もう一度入力して下さい"
+        return try_game
+      end
       i -= 1
       j -= 1
       board.reveal(i,j)

@@ -54,8 +54,8 @@ class Board
       bomb_map[c] = true
     end
     bomb_map.shuffle!
-    bomb_map.each_with_index do |bomb, idx|
-      lists.flatten[idx].status = :bomb if bomb
+    bomb_map.each_with_index do |bool, idx|
+      lists.flatten[idx].status = :bomb if bool
     end
     numbers_set
   end
@@ -69,8 +69,7 @@ class Board
     def reveal_loop(i,j)
       lists[i][j].revealed = true
       return if lists[i][j].status == :bomb
-      return if (i < 0 || i > n-1 || j < 0 || j > n-1) || \
-                lists[i][j].status != 0 && lists[i][j].status.to_s.match(/\d/)
+      return if (i < 0 || i > n-1 || j < 0 || j > n-1) || lists[i][j].status.to_s.match(/\d/)
       reveal_loop(i-1,j-1) if within_range?(i-1,j-1) && (not lists[i-1][j].revealed?)
       reveal_loop(i-1,j)   if within_range?(i-1,j)   && (not lists[i-1][j].revealed?)
       reveal_loop(i-1,j+1) if within_range?(i-1,j+1) && (not lists[i-1][j+1].revealed?)
@@ -96,6 +95,13 @@ class Board
           end
         end
       end
+      none_set
+    end
+
+    def none_set
+      lists.flatten.each do |l|
+        l.status = :safe if l.status == 0
+      end
     end
 
     def game_over
@@ -103,7 +109,7 @@ class Board
         l.revealed = true if l.status == :bomb
       end
       puts_list
-      puts "GAME OVER".center(n*(n.to_s.length)+n.to_s.length)
+      puts "GAME OVER".center(n*([n.to_s.length,2].max)+n.to_s.length)
     end
 
     def game_over?
@@ -115,14 +121,13 @@ class Board
 
     def game_clear
       puts_list
-      puts "CLEAR!!".center(n*(n.to_s.length)+n.to_s.length)
+      p n,n*(n.to_s.length)+n.to_s.length
+      puts "CLEAR!!".center(n*([n.to_s.length,2].max)+n.to_s.length)
     end
 
     def game_clear?
       count = 0
-      lists.flatten.each do |l|
-        count += 1 if l.revealed?
-      end
+      lists.flatten.each {|l| count += 1 if l.revealed?}
       count == n*n - bomb_count
     end
 
@@ -135,7 +140,7 @@ class Board
       lists.flatten.each do |l|
         next  cur_stat << "■" unless l.revealed
         case s =  l.status
-        when 0
+        when :safe
           cur_stat << "□"
         when :bomb
           cur_stat << "B"
@@ -187,7 +192,7 @@ class Minesweeper
     while board.continuing?
       print "縦 横:"
       i,j = gets.split.map(&:to_i)
-      if (not i) || (not j) || (i < 0 || i > n) || (j < 0 || j > n)
+      if validate(i,j)
         puts "もう一度入力して下さい"
         return try_game
       end
@@ -203,16 +208,18 @@ class Minesweeper
     yes_or_no = gets.to_s.chomp
     if yes_or_no == 'yes'
       start
-    else
+    elsif yes_or_no == 'no'
       puts "終了します"
       exit
+    else
+      return ask_again
     end
   end
+
+  private
+    def validate(i,j)
+      (not i) || (not j) || (i < 0 || i > n) || (j < 0 || j > n)
+    end
 end
 
-# board = Board.new(7)
-# board.bomb_set(1)
-# board.puts_list
-# board.reveal(1,1)
-# board.puts_list
 Minesweeper.new.start

@@ -14,7 +14,7 @@ class Cell
 end
 
 class Board
-  attr_accessor :n , :lists, :bomb_map, :bomb_count
+  attr_accessor :n, :lists, :bomb_map, :bomb_count
 
   def initialize(n)
     @n = n
@@ -28,8 +28,14 @@ class Board
     end
   end
 
-  def reveal(i,j)
+  def reveal(i,j,*flag)
+    return flag(i,j) unless flag.empty?
     reveal_loop(i,j)
+    check_game_status
+  end
+
+  def flag(i,j)
+    lists[i][j].revealed = :flag
     check_game_status
   end
 
@@ -138,7 +144,8 @@ class Board
     def current_statuses
       cur_stat = []
       lists.flatten.each do |l|
-        next  cur_stat << "■" unless l.revealed
+        next cur_stat << "F" if l.revealed == :flag
+        next cur_stat << "■" unless l.revealed?
         case s =  l.status
         when :safe
           cur_stat << "□"
@@ -164,16 +171,19 @@ end
 
 class Minesweeper
   attr_accessor :board, :n
+  def start
+    game_config
+    board.puts_list
+    try_game
+  end
+
   def game_config
     puts "7×7マス,爆弾3個 でよろしいですか？(yes/no)"
     yes_or_no = gets.to_s.chomp
-    if yes_or_no == "no"
-      puts "縦横何マスずつにしますか？"
-      @n = gets.to_i
-      puts "爆弾の個数は何個にしますか？"
-      bomb = gets.to_i
-    elsif yes_or_no == "yes"
+    if yes_or_no == "yes"
       @n, bomb = 7, 3
+    elsif yes_or_no == "no"
+      @n, bomb = custom_info
     else
       puts "もう一度入力して下さい。"
       return game_config
@@ -182,22 +192,18 @@ class Minesweeper
     board.bomb_set(bomb)
   end
 
-  def start
-    game_config
-    board.puts_list
-    try_game
-  end
-
   def try_game
     while board.continuing?
       print "縦 横:"
-      i,j = gets.split.map(&:to_i)
+      i,j,*flag = gets.split
+      i,j = i.to_i,j.to_i
       if validate(i,j)
         puts "もう一度入力して下さい"
         return try_game
       end
       i -= 1
       j -= 1
+      next board.flag(i,j) unless flag.empty?
       board.reveal(i,j)
     end
     ask_again
@@ -219,6 +225,18 @@ class Minesweeper
   private
     def validate(i,j)
       (not i) || (not j) || (i < 0 || i > n) || (j < 0 || j > n)
+    end
+
+    def custom_info
+      puts "縦横何マスずつにしますか？"
+      @n = gets.to_i
+      puts "爆弾の個数は何個にしますか？"
+      bomb = gets.to_i
+      if n < 1 || bomb < 1 || n*n <= bomb
+        puts "もう一度入力して下さい。"
+        return custom_info
+      end
+      [n,bomb]
     end
 end
 

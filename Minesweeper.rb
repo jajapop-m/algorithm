@@ -9,7 +9,7 @@ class Cell
   end
 
   def revealed?
-    revealed
+    revealed == true
   end
 end
 
@@ -111,9 +111,7 @@ class Board
     end
 
     def game_over
-      lists.flatten.each do |l|
-        l.revealed = true if l.status == :bomb
-      end
+      lists.flatten.each {|l| l.revealed = true if l.status == :bomb}
       puts_list
       puts "GAME OVER".center(n*([n.to_s.length,2].max)+n.to_s.length)
     end
@@ -127,7 +125,6 @@ class Board
 
     def game_clear
       puts_list
-      p n,n*(n.to_s.length)+n.to_s.length
       puts "CLEAR!!".center(n*([n.to_s.length,2].max)+n.to_s.length)
     end
 
